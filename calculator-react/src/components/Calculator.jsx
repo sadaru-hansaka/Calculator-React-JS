@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import Keys from "./Keys"
+import Keys from "./Keys";
+import {evaluate} from "mathjs";
 
 const Calculator = () =>{
 
@@ -12,12 +13,23 @@ const Calculator = () =>{
 
     const handleClick = (label) =>{
         if(label === "AC"){
-            setDisplay("");
+            setDisplay("");   //set display blanck when click AC
             setShowResult("");
         }else if (label === "DEL"){
-            setDisplay(display.slice(0, -1));
+            setDisplay(display.slice(0, -1));  //delete items one by one from the right side corner when click DEL
         }else if(label === "Equals"){
-            setShowResult("Result");
+            try {
+                // Replace some custom symbols with math.js compatible symbols
+                // let processedExpression = display
+                //     .replace(/√/g, "sqrt")
+                //     .replace(/\^/g, "^");
+
+                // Evaluate the expression using math.js
+                const result = evaluate(display);
+                setShowResult(result);
+            } catch (error) {
+                setShowResult("Error");
+            }
         }
         else{
             setDisplay(display + label);
