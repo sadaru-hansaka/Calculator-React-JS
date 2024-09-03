@@ -75,6 +75,8 @@ const Calculator = () =>{
 
     //change to next mode
     const changeMode = (newMode) => {
+        setShowResult("");
+        setDisplay("");
         setMode(newMode);
         setMenuOpen(false); // Close the menu after selecting a mode
       };
@@ -85,24 +87,22 @@ const Calculator = () =>{
     const resultClass = "text-[1.2rem]";
     const operationClass = "text-[1.2rem] flex-gap-[5px] item-center text-[rgba(255,255,255,0.5)] justify-end";
     return(
-        <div className="min-w-[320px] bg-black flex flex-col gap-4 p-4 rounded-2xl">
+        <div className="w-[350px] bg-black flex flex-col gap-4 p-4 rounded-2xl">
 
+        <div className="flex items-center  text-[15px] text-white p-0 m-0">
             {/* menu bar icon */}
-            <FaBars onClick={toggleMenu} className="cursor-pointer text-[15px] text-white" />
-            <span className="text-white text-lg">{mode}</span> {/* Display the current mode */}
-            
+            <FaBars onClick={toggleMenu} className="mr-5 mt-1 cursor-pointer"/> 
+            <p className="m-0 text-[20px]">{mode}</p> {/* Display the current mode */}
+        </div>
+
             
             {menuOpen && (
-                <div className="absolute top-[70px] left-0 bg-[#222] p-6 w-full z-10 rounded-lg">
+                <div className="absolute items-start bg-[#222] p-6 w-[316px] rounded-2xl m-0">
                 <ul className="flex flex-col gap-2">
-                  <li onClick={() => changeMode(Modes.Standard)}>Standard</li>
-                  <li onClick={() => changeMode(Modes.Scientefic)}>Scientific</li>
-                  <li onClick={() => changeMode(Modes.Programming)}>Programming</li>
-                  <li>
-                    <button onClick={toggleMenu} className="p-2 w-full text-left bg-[#ff4d4d] rounded">
-                      Close Menu
-                    </button>
-                  </li>
+                 <li onClick={toggleMenu} className="text-red-600 cursor-pointer flex justify-end p-0 m-0">x</li>
+                  <li className="cursor-pointer hover:text-blue-400" onClick={() => changeMode(Modes.Standard)}>Standard</li>
+                  <li className="cursor-pointer hover:text-blue-400" onClick={() => changeMode(Modes.Scientefic)}>Scientific</li>
+                  <li className="cursor-pointer hover:text-blue-400" onClick={() => changeMode(Modes.Programming)}>Programming</li>
                 </ul>
               </div>
             )}
