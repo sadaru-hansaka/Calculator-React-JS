@@ -42,10 +42,6 @@ const Calculator = () =>{
             setDisplay(display.slice(0, -1));  //delete items one by one from the right side corner when click DEL
         }else if(label === "Equals"){
             try {
-                // Replace some custom symbols with math.js compatible symbols
-                // let processedExpression = display
-                //     .replace(/√/g, "sqrt")
-                //     .replace(/\^/g, "^");
 
                 // Evaluate the expression using math.js
                 const result = evaluate(display);
@@ -53,8 +49,17 @@ const Calculator = () =>{
             } catch (error) {
                 setShowResult("Error");
             }
-        }
-        else{
+        } else if (["sin", "cos", "tan", "√", "^"].includes(label)) {
+            let modifiedDisplay;
+            if (label === "√") {
+                modifiedDisplay = `sqrt(${display})`;  // Replace √ with math.js sqrt()
+            } else if (label === "^") {
+                modifiedDisplay = `${display}^`;  // Handle power operator
+            } else {
+                modifiedDisplay = `${label}(${display})`;  // Handle trigonometric functions
+            }
+            setDisplay(modifiedDisplay);  // Update display with the function
+        }else{
             // display clicked numbers and operators
             setDisplay(display + label);
             setShowResult(false);
