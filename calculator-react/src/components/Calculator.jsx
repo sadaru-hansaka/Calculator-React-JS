@@ -10,42 +10,47 @@ const Modes = {
 }
 
 const Calculator = () =>{
-
-    
-
     const standardkeys = [
         "AC","DEL","%","/",
         "7","8","9","*",
         "4","5","6","-",
-        "1","2","3","+",".","0","Equals",
+        "1","2","3","+",".","0","=",
     ];
 
     const datesss = [
         "AC", "DEL", "sin", "cos", "tan", "^", "√", "/",
     "7", "8", "9", "*",
     "4", "5", "6", "-",
-    "1", "2", "3", "+", ".", "0", "Equals",
+    "1", "2", "3", "+", ".", "0", "=",
     ]
 
     const programmerKeys = [
-        "AC", "DEL", "AND", "OR", "XOR", "NOT", "Lsh", "Rsh", "/",
-        "7", "8", "9", "*",
-        "4", "5", "6", "-",
-        "1", "2", "3", "+", ".", "0", "Equals",
+        "AC", "DEL", "A", "B", 
+        "C", "D", "E", "F", 
+        "/","7", "8", "9", 
+        "*","4", "5", "6", 
+        "-","1", "2", "3", 
+        "+", ".", "0", "=",
       ];
 
     const handleClick = (label) =>{
         if(label === "AC"){
             setDisplay("");   //set display blanck when click AC
             setShowResult("");
+            setConvertedValues({ hex: "0", dec: "0", oct: "0", bin: "0" });
         }else if (label === "DEL"){
             setDisplay(display.slice(0, -1));  //delete items one by one from the right side corner when click DEL
-        }else if(label === "Equals"){
+        }else if(label === "="){
             try {
 
                 // Evaluate the expression using math.js
                 const result = evaluate(display);
                 setShowResult(result);
+
+                if (mode == Modes.Programming){
+                  updateConvertedValues(result);
+                };
+
             } catch (error) {
                 setShowResult("Error");
             }
@@ -63,8 +68,54 @@ const Calculator = () =>{
             // display clicked numbers and operators
             setDisplay(display + label);
             setShowResult(false);
+
+            if (mode === Modes.Programming){
+              updateConvertedValues(display+label);
+            };
         }
     }
+
+    // data convertors
+    const updateConvertedValues = (value) => {
+      let convert_Value;
+    
+      // Determine the base of the input value
+      if (/^[01]+$/.test(value)) {
+        // Binary input
+        convert_Value = parseInt(value, 2);
+      } else if (/^[0-7]+$/.test(value)) {
+        // Octal input
+        convert_Value = parseInt(value, 8);
+      } else if (/^[0-9A-Fa-f]+$/.test(value)) {
+        // Hexadecimal input
+        convert_Value = parseInt(value, 16);
+      } else if (/^\d+$/.test(value)) {
+        // Decimal input
+        convert_Value = parseInt(value, 10);
+      } else {
+        convert_Value = NaN; // Invalid input
+      }
+    
+      if (!isNaN(convert_Value)) {
+        // Convert to different bases
+        setConvertedValues({
+          hex: convert_Value.toString(16).toUpperCase(),
+          dec: convert_Value.toString(10),
+          oct: convert_Value.toString(8),
+          bin: convert_Value.toString(2),
+        });
+      } else {
+        // If invalid, reset values
+        setConvertedValues({
+          hex: "Invalid",
+          dec: "Invalid",
+          oct: "Invalid",
+          bin: "Invalid",
+        });
+      }
+    };
+    
+    // --------------------------------------------------------------
 
     const [showResult, setShowResult] = useState(false);
     const [display , setDisplay] = useState("");
@@ -72,6 +123,14 @@ const Calculator = () =>{
     // State for managing the scientific mode and menu visibility
     const [mode, setMode] = useState(Modes.Standard)
     const [menuOpen, setMenuOpen] = useState(false); 
+
+      // Programming calculator data converters
+    const [convertedValues, setConvertedValues] = useState({
+      hex: "0",
+      dec: "0",
+      oct: "0",
+      bin: "0",
+    }); // Converted values for programming mode
 
     //open menu
     const toggleMenu = () =>{
@@ -116,6 +175,16 @@ const Calculator = () =>{
             <div className="overflow-x-auto bg-[#141414] min-h-[100px] flex items-end justify-end flex-col p-4 rounded-[10px]">
                 <div className="text-[25px]">{display}</div>
                 <div className={'${showResult ? resultClass : operationClass} '}>{showResult}</div>
+
+                 {/* Conditionally render converted values in programming mode */}
+                {mode === Modes.Programming && (
+                  <ul className="self-start mt-2">
+                    <li>Hex : {convertedValues.hex} </li>
+                    <li>DEC : {convertedValues.dec}</li>
+                    <li>OCT : {convertedValues.oct}</li>
+                    <li>BIN : {convertedValues.bin}</li>
+                  </ul>
+                )}
             </div>
 
             {/* key section */}
