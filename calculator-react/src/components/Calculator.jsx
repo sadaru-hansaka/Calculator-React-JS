@@ -10,79 +10,96 @@ const Modes = {
   Scientific: "Scientific",
 };
 
-const Calculator = () => {
-  const standardKeys = [
-    "AC", "DEL", "%", "/",
+const Calculator = () =>{
+
+    
+
+    const standardkeys = [
+        "AC","DEL","%","/",
+        "7","8","9","*",
+        "4","5","6","-",
+        "1","2","3","+",".","0","Equals",
+    ];
+
+    const datesss = [
+        "AC", "DEL", "sin", "cos", "tan", "^", "√", "/",
     "7", "8", "9", "*",
     "4", "5", "6", "-",
     "1", "2", "3", "+", ".", "0", "Equals",
-  ];
+    ]
 
-  const scientificKeys = [
-    "AC", "DEL", "sin", "cos", "tan", "^", "√", "/",
-    "7", "8", "9", "*",
-    "4", "5", "6", "-",
-    "1", "2", "3", "+", ".", "0", "Equals",
-  ];
+    const programmerKeys = [
+        "AC", "DEL", "AND", "OR", "XOR", "NOT", "Lsh", "Rsh", "/",
+        "7", "8", "9", "*",
+        "4", "5", "6", "-",
+        "1", "2", "3", "+", ".", "0", "Equals",
+      ];
 
-  const [showResult, setShowResult] = useState(false);
-  const [display, setDisplay] = useState("");
-  const [mode, setMode] = useState(Modes.Standard); // mode state
-  const [menuOpen, setMenuOpen] = useState(false); // menu state
-  const [convertedValues, setConvertedValues] = useState({
-    hex: "0",
-    dec: "0",
-    oct: "0",
-    bin: "0",
-  }); // converted values for programming mode
+    const handleClick = (label) =>{
+        if(label === "AC"){
+            setDisplay("");   //set display blanck when click AC
+            setShowResult("");
+        }else if (label === "DEL"){
+            setDisplay(display.slice(0, -1));  //delete items one by one from the right side corner when click DEL
+        }else if(label === "Equals"){
+            try {
 
-  const toggleMenu = () => setMenuOpen(!menuOpen); // open/close menu
-
-  const changeMode = (newMode) => {
-    setDisplay(""); // clear display when mode changes
-    setShowResult(false);
-    setMode(newMode);
-    setMenuOpen(false); // close the menu after selecting a mode
-  };
-
-  const handleClick = (label) => {
-    if (label === "AC") {
-      setDisplay(""); // clear display
-      setShowResult("");
-    } else if (label === "DEL") {
-      setDisplay(display.slice(0, -1)); // delete last character
-    } else if (label === "Equals") {
-      try {
-        const result = evaluate(display); // evaluate expression
-        setShowResult(result);
-      } catch (error) {
-        setShowResult("Error");
-      }
-    } else if (["sin", "cos", "tan", "√", "^"].includes(label)) {
-      let modifiedDisplay;
-      if (label === "√") {
-        modifiedDisplay = `sqrt(${display})`; // handle sqrt
-      } else if (label === "^") {
-        modifiedDisplay = `${display}^`; // handle power
-      } else {
-        modifiedDisplay = `${label}(${display})`; // handle trigonometry
-      }
-      setDisplay(modifiedDisplay); // update display
-    } else {
-      setDisplay(display + label); // append label to display
-      setShowResult(false);
+                // Evaluate the expression using math.js
+                const result = evaluate(display);
+                setShowResult(result);
+            } catch (error) {
+                setShowResult("Error");
+            }
+        } else if (["sin", "cos", "tan", "√", "^"].includes(label)) {
+            let modifiedDisplay;
+            if (label === "√") {
+                modifiedDisplay = `sqrt(${display})`;  // Replace √ with math.js sqrt()
+            } else if (label === "^") {
+                modifiedDisplay = `${display}^`;  // Handle power operator
+            } else {
+                modifiedDisplay = `${label}(${display})`;  // Handle trigonometric functions
+            }
+            setDisplay(modifiedDisplay);  // Update display with the function
+        }else{
+            // display clicked numbers and operators
+            setDisplay(display + label);
+            setShowResult(false);
+        }
     }
-  };
 
-  const keys = mode === Modes.Scientific ? scientificKeys : standardKeys; // keys for current mode
+    const [showResult, setShowResult] = useState(false);
+    const [display , setDisplay] = useState("");
 
-  return (
-    <div className="w-[350px] bg-black flex flex-col gap-4 p-4 rounded-2xl">
-      {/* Menu bar with mode selection */}
-      <div className="flex items-center text-white">
-        <FaBars onClick={toggleMenu} className="mr-5 mt-1 cursor-pointer" />
-        <p className="m-0 text-[20px]">{mode}</p>
-      </div>
+    // State for managing the scientific mode and menu visibility
+    const [mode, setMode] = useState(Modes.Standard)
+    const [menuOpen, setMenuOpen] = useState(false); 
+
+    //open menu
+    const toggleMenu = () =>{
+        setMenuOpen(!menuOpen)
+    };
+
+    //change to next mode
+    const changeMode = (newMode) => {
+        setShowResult("");
+        setDisplay("");
+        setMode(newMode);
+        setMenuOpen(false); // Close the menu after selecting a mode
+      };
+
+    const keys = mode === Modes.Scientefic ? datesss : mode === Modes.Programming ? programmerKeys : standardkeys;
+
+
+    const resultClass = "text-[1.2rem]";
+    const operationClass = "text-[1.2rem] flex-gap-[5px] item-center text-[rgba(255,255,255,0.5)] justify-end";
+    return(
+        <div className="w-[350px] bg-black flex flex-col gap-4 p-4 rounded-2xl">
+
+        <div className="flex items-center  text-[15px] text-white p-0 m-0">
+            {/* menu bar icon */}
+            <FaBars onClick={toggleMenu} className="mr-5 mt-1 cursor-pointer"/> 
+            <p className="m-0 text-[20px]">{mode}</p> {/* Display the current mode */}
+        </div>
 
       {/* Conditional Menu */}
       {menuOpen && (
@@ -96,11 +113,11 @@ const Calculator = () => {
         </div>
       )}
 
-      {/* Display Section */}
-      <div className="overflow-x-auto bg-[#141414] min-h-[100px] flex items-end justify-end flex-col p-4 rounded-[10px]">
-        <div className="text-[25px]">{display}</div>
-        <div className={'${showResult ? "text-[1.2rem]" : "text-[rgba(255,255,255,0.5)]"}'}>{showResult}</div>
-      </div>
+            {/* Answer and Calculation section */}
+            <div className="overflow-x-auto bg-[#141414] min-h-[100px] flex items-end justify-end flex-col p-4 rounded-[10px]">
+                <div className="text-[25px]">{display}</div>
+                <div className={'${showResult ? resultClass : operationClass} '}>{showResult}</div>
+            </div>
 
       {/* Render different UIs based on the current mode */}
       {mode === Modes.Programming ? (
