@@ -79,22 +79,40 @@ const Calculator = () =>{
     const updateConvertedValues = (value) => {
       let convert_Value;
     
-      // Determine the base of the input value
-      if (/^[01]+$/.test(value)) {
-        // Binary input
-        convert_Value = parseInt(value, 2);
-      } else if (/^[0-7]+$/.test(value)) {
-        // Octal input
-        convert_Value = parseInt(value, 8);
-      } else if (/^[0-9A-Fa-f]+$/.test(value)) {
-        // Hexadecimal input
-        convert_Value = parseInt(value, 16);
-      } else if (/^\d+$/.test(value)) {
-        // Decimal input
-        convert_Value = parseInt(value, 10);
-      } else {
-        convert_Value = NaN; // Invalid input
-      }
+      // Validate and convert based on input format
+    switch (inputFormat) {
+      case 'bin':
+          // Ensure the input is valid binary (only 0 or 1)
+          if (/^[01]+$/.test(value)) {
+              convert_Value = parseInt(value, 2);  // Convert from binary
+          } else {
+              convert_Value = NaN;  // Invalid input for binary
+          }
+          break;
+      case 'oct':
+          // Ensure the input is valid octal (0-7)
+          if (/^[0-7]+$/.test(value)) {
+              convert_Value = parseInt(value, 8);  // Convert from octal
+          } else {
+              convert_Value = NaN;  // Invalid input for octal
+          }
+          break;
+      case 'hex':
+          // Ensure the input is valid hexadecimal (0-9, A-F)
+          if (/^[0-9A-Fa-f]+$/.test(value)) {
+              convert_Value = parseInt(value, 16);  // Convert from hexadecimal
+          } else {
+              convert_Value = NaN;  // Invalid input for hexadecimal
+          }
+          break;
+      default:
+          // Assume decimal input (digits 0-9)
+          if (/^\d+$/.test(value)) {
+              convert_Value = parseInt(value, 10);  // Convert from decimal
+          } else {
+              convert_Value = NaN;  // Invalid input for decimal
+          }
+  }
     
       if (!isNaN(convert_Value)) {
         // Convert to different bases
@@ -132,6 +150,9 @@ const Calculator = () =>{
       bin: "0",
     }); // Converted values for programming mode
 
+    const [inputFormat, setInputFormat] = useState('dec');  // Track input format
+
+
     //open menu
     const toggleMenu = () =>{
         setMenuOpen(!menuOpen)
@@ -144,6 +165,12 @@ const Calculator = () =>{
         setMode(newMode);
         setMenuOpen(false); // Close the menu after selecting a mode
       };
+
+    const handleFormatChange = (format) => {
+        setInputFormat(format);
+        setDisplay("");  // Reset display on format change
+    };
+    
 
     const keys = mode === Modes.Scientefic ? datesss : mode === Modes.Programming ? programmerKeys : standardkeys;
 
@@ -179,10 +206,10 @@ const Calculator = () =>{
                  {/* Conditionally render converted values in programming mode */}
                 {mode === Modes.Programming && (
                   <ul className="self-start mt-2">
-                    <li>Hex : {convertedValues.hex} </li>
-                    <li>DEC : {convertedValues.dec}</li>
-                    <li>OCT : {convertedValues.oct}</li>
-                    <li>BIN : {convertedValues.bin}</li>
+                    <li className={`cursor-pointer ${inputFormat === 'hex' && 'text-blue-400'}`} onClick={() => handleFormatChange('hex')}>Hex : {convertedValues.hex}</li>
+                    <li className={`cursor-pointer ${inputFormat === 'dec' && 'text-blue-400'}`} onClick={() => handleFormatChange('dec')}>DEC : {convertedValues.dec}</li>
+                    <li className={`cursor-pointer ${inputFormat === 'oct' && 'text-blue-400'}`} onClick={() => handleFormatChange('oct')}>OCT : {convertedValues.oct}</li>
+                    <li className={`cursor-pointer ${inputFormat === 'bin' && 'text-blue-400'}`} onClick={() => handleFormatChange('bin')}>BIN : {convertedValues.bin}</li>
                   </ul>
                 )}
             </div>
