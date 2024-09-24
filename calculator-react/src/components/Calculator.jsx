@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Keys from "./Keys";
 import {evaluate} from "mathjs";
 import {FaBars} from "react-icons/fa";  //import menu bar icon
+import { FaExchangeAlt } from "react-icons/fa";
 
 const Modes = {
     Standard : "Standard",
@@ -14,26 +15,29 @@ const Calculator = () =>{
         "AC","DEL","%","/",
         "7","8","9","*",
         "4","5","6","-",
-        "1","2","3","+",".","0","=",
+        "1","2","3","+",
+        <FaExchangeAlt/> , "0",".","=",
     ];
 
     const datesss = [
         "AC", "DEL", "sin", "cos", "tan", "^", "√", "/",
-    "7", "8", "9", "*",
-    "4", "5", "6", "-",
-    "1", "2", "3", "+", ".", "0", "=",
+        "7", "8", "9", "*",
+        "4", "5", "6", "-",
+        "1", "2", "3", "+", 
+        <FaExchangeAlt/>,".", "0", "=",
     ]
 
     const programmerKeys = [
         "AC", "DEL", "A", "B", 
         "C", "D", "E", "F", 
-        "/","7", "8", "9", 
-        "*","4", "5", "6", 
-        "-","1", "2", "3", 
-        "+", ".", "0", "=",
+        "7", "8", "9", "/",
+        "4", "5", "6", "*",
+        "1", "2", "3", "-",
+        ".", "0", "=","+",
       ];
 
     const handleClick = (label) =>{
+
         if(label === "AC"){
             setDisplay("");   //set display blanck when click AC
             setShowResult("");
@@ -64,6 +68,10 @@ const Calculator = () =>{
                 modifiedDisplay = `${label}(${display})`;  // Handle trigonometric functions
             }
             setDisplay(modifiedDisplay);  // Update display with the function
+
+        // change icon operation
+        }else if (React.isValidElement(label) && label.type === FaExchangeAlt){
+            console.log("Changed"); //this should develop to change the mode
         }else{
             // display clicked numbers and operators
             setDisplay(display + label);
@@ -217,7 +225,7 @@ const Calculator = () =>{
             {/* key section */}
             <div className="grid grid-cols-[repeat(4,1fr)] gap-[0.3 rem]">
                 {keys.map((item, index)=>(
-                    <Keys label={item} key={index} keyClass ={item === 'Equals' && 'equals'} onClick = {() => handleClick(item)}/>
+                    <Keys label={item} key={index} keyClass ={item === '='} onClick = {() => handleClick(item)}/>
                 ))}
             </div>
         </div>
