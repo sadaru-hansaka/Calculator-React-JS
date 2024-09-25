@@ -54,6 +54,7 @@ const Calculator = () =>{
                 if (mode == Modes.Programming){
                   updateConvertedValues(result);
                 };
+                
 
             } catch (error) {
                 setShowResult("Error");
@@ -71,7 +72,16 @@ const Calculator = () =>{
 
         // change icon operation
         }else if (React.isValidElement(label) && label.type === FaExchangeAlt){
-            console.log("Changed"); //this should develop to change the mode
+            if (mode === Modes.Standard){  //change the mode when click change key in standard and scientefic cal
+                setMode(Modes.Scientefic);
+                setDisplay("");
+                setShowResult("");
+            }else if (mode === Modes.Scientefic){
+                setMode(Modes.Standard);
+                setDisplay("");
+                setShowResult("");
+            }
+            // --------------------------
         }else{
             // display clicked numbers and operators
             setDisplay(display + label);
@@ -90,7 +100,7 @@ const Calculator = () =>{
       // Validate and convert based on input format
     switch (inputFormat) {
       case 'bin':
-          // Ensure the input is valid binary (only 0 or 1)
+          // validate input(only 0 or 1)
           if (/^[01]+$/.test(value)) {
               convert_Value = parseInt(value, 2);  // Convert from binary
           } else {
@@ -98,7 +108,7 @@ const Calculator = () =>{
           }
           break;
       case 'oct':
-          // Ensure the input is valid octal (0-7)
+          // validate input (0-7)
           if (/^[0-7]+$/.test(value)) {
               convert_Value = parseInt(value, 8);  // Convert from octal
           } else {
@@ -106,7 +116,7 @@ const Calculator = () =>{
           }
           break;
       case 'hex':
-          // Ensure the input is valid hexadecimal (0-9, A-F)
+          // validate input (0-9, A-F)
           if (/^[0-9A-Fa-f]+$/.test(value)) {
               convert_Value = parseInt(value, 16);  // Convert from hexadecimal
           } else {
@@ -114,7 +124,7 @@ const Calculator = () =>{
           }
           break;
       default:
-          // Assume decimal input (digits 0-9)
+          // validate input (digits 0-9)
           if (/^\d+$/.test(value)) {
               convert_Value = parseInt(value, 10);  // Convert from decimal
           } else {
