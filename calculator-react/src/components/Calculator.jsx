@@ -45,32 +45,56 @@ const Calculator = () =>{
         }else if (label === "DEL"){
             setDisplay(display.slice(0, -1));  //delete items one by one from the right side corner when click DEL
         }else if(label === "="){
+            // Calculate hex, decimal, octal, binary values
             try {
-                if (mode === Modes.Programming && inputFormat === 'hex') {
-                    const operands = display.split("+").map(op => op.trim());
-                    
-                    if (operands.length === 2) {
-                        // Convert each operand from hexadecimal to decimal
-                        const hex1 = parseInt(operands[0], 16);
-                        const hex2 = parseInt(operands[1], 16);
+                if (mode === Modes.Programming) {
+                    if(inputFormat === 'hex'){
+                        const operatorPatterns = /([+\-*/])/;
+                        const operands = display.split(operatorPatterns).map(op => op.trim());
                         
-                        // Check if both conversions were successful
-                        if (!isNaN(hex1) && !isNaN(hex2)) {
-                            const hexResult = hex1 + hex2; // Perform the addition
+                        if (operands.length === 3) {
+                            // Convert each operand from hexadecimal to decimal
+                            const hex1 = parseInt(operands[0], 16);
+                            const Op = operands[1];  //get the operator
+                            const hex2 = parseInt(operands[2], 16);
                             
-                            setShowResult(hexResult.toString(16).toUpperCase());  // Display the result in hex
-                            updateConvertedValues(hexResult.toString(16).toUpperCase());  // Update converted values
+                            // Check if both conversions were successful
+                            if (!isNaN(hex1) && !isNaN(hex2)) {
+                                let hexResult;
+
+                                // check operator
+                                switch(Op){
+                                    case "+":
+                                        hexResult = hex1 + hex2;
+                                        break;
+                                    case "-":
+                                        hexResult = hex1 - hex2;
+                                        break;
+                                    case "*":
+                                        hexResult = hex1*hex2;
+                                        break;
+                                    case "/":
+                                        hexResult = hex2 !== 0 ? Math.floor(hex1/hex2) : Nan; //check second hex values is 0 or not
+                                        break;
+                                    default:
+                                        setShowResult("Error");
+                                        break;
+                                }
+                                
+                                setShowResult(hexResult.toString(16).toUpperCase());  // Display the result in hex
+                                updateConvertedValues(hexResult.toString(16).toUpperCase());  // Update converted values
+                            } else {
+                                setShowResult("Error");  // invalid input
+                            }
                         } else {
-                            setShowResult("Error");  // invalid input
-                        }
-                    } else {
-                        // If a single value is entered
-                        const hexSingle = parseInt(display, 16);
-                        if (!isNaN(hexSingle)) {
-                            setShowResult(hexSingle);
-                            updateConvertedValues(hexSingle.toString(16).toUpperCase());
-                        } else {
-                            setShowResult("Error");
+                            // If a single value is entered
+                            const hexSingle = parseInt(display, 16);
+                            if (!isNaN(hexSingle)) {
+                                setShowResult(hexSingle);
+                                updateConvertedValues(hexSingle.toString(16).toUpperCase());
+                            } else {
+                                setShowResult("Error");
+                            }
                         }
                     }
                 } else {
