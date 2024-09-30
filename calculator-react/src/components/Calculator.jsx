@@ -46,27 +46,51 @@ const Calculator = () =>{
             setDisplay(display.slice(0, -1));  //delete items one by one from the right side corner when click DEL
         }else if(label === "="){
             try {
-
-                // Evaluate the expression using math.js
-                const result = evaluate(display);
-                setShowResult(result);
-
-                if (mode == Modes.Programming){
-                  updateConvertedValues(result);
-                };
-                
-
+                if (mode === Modes.Programming && inputFormat === 'hex') {
+                    const operands = display.split("+").map(op => op.trim());
+                    
+                    if (operands.length === 2) {
+                        // Convert each operand from hexadecimal to decimal
+                        const hex1 = parseInt(operands[0], 16);
+                        const hex2 = parseInt(operands[1], 16);
+                        
+                        // Check if both conversions were successful
+                        if (!isNaN(hex1) && !isNaN(hex2)) {
+                            const hexResult = hex1 + hex2; // Perform the addition
+                            
+                            setShowResult(hexResult.toString(16).toUpperCase());  // Display the result in hex
+                            updateConvertedValues(hexResult.toString(16).toUpperCase());  // Update converted values
+                        } else {
+                            setShowResult("Error");  // invalid input
+                        }
+                    } else {
+                        // If a single value is entered
+                        const hexSingle = parseInt(display, 16);
+                        if (!isNaN(hexSingle)) {
+                            setShowResult(hexSingle);
+                            updateConvertedValues(hexSingle.toString(16).toUpperCase());
+                        } else {
+                            setShowResult("Error");
+                        }
+                    }
+                } else {
+                    // Evaluate the expression using math.js 
+                    const result = evaluate(display);
+                    setShowResult(result);
+                    updateConvertedValues(result);
+                }
             } catch (error) {
+                console.error(error);  // Log the error for debugging
                 setShowResult("Error");
             }
         } else if (["sin", "cos", "tan", "√", "^"].includes(label)) {
             let modifiedDisplay;
             if (label === "√") {
-                modifiedDisplay = `sqrt(${display})`;  // Replace √ with math.js sqrt()
+                modifiedDisplay = `sqrt(${display})`;  // display √ with math.js sqrt()
             } else if (label === "^") {
-                modifiedDisplay = `${display}^`;  // Handle power operator
+                modifiedDisplay = `${display}^`;  // power operator
             } else {
-                modifiedDisplay = `${label}(${display})`;  // Handle trigonometric functions
+                modifiedDisplay = `${label}(${display})`;  // trigonometric functions
             }
             setDisplay(modifiedDisplay);  // Update display with the function
 
@@ -98,63 +122,65 @@ const Calculator = () =>{
       let convert_Value;
     
       // Validate and convert based on input format
-    switch (inputFormat) {
-      case 'bin':
-          // validate input(only 0 or 1)
-          if (/^[01]+$/.test(value)) {
-              convert_Value = parseInt(value, 2);  // Convert from binary
-          } else {
-              convert_Value = NaN;  // Invalid input for binary
-          }
-          break;
-      case 'oct':
-          // validate input (0-7)
-          if (/^[0-7]+$/.test(value)) {
-              convert_Value = parseInt(value, 8);  // Convert from octal
-          } else {
-              convert_Value = NaN;  // Invalid input for octal
-          }
-          break;
-      case 'hex':
-          // validate input (0-9, A-F)
-          if (/^[0-9A-Fa-f]+$/.test(value)) {
-              convert_Value = parseInt(value, 16);  // Convert from hexadecimal
-          } else {
-              convert_Value = NaN;  // Invalid input for hexadecimal
-          }
-          break;
-      default:
-          // validate input (digits 0-9)
-          if (/^\d+$/.test(value)) {
-              convert_Value = parseInt(value, 10);  // Convert from decimal
-          } else {
-              convert_Value = NaN;  // Invalid input for decimal
-          }
-  }
-    
-      if (!isNaN(convert_Value)) {
-        // Convert to different bases
-        setConvertedValues({
-          hex: convert_Value.toString(16).toUpperCase(),
-          dec: convert_Value.toString(10),
-          oct: convert_Value.toString(8),
-          bin: convert_Value.toString(2),
-        });
-      } else {
-        // If invalid, reset values
-        setConvertedValues({
-          hex: "Invalid",
-          dec: "Invalid",
-          oct: "Invalid",
-          bin: "Invalid",
-        });
-      }
+        switch (inputFormat) {
+        case 'bin':
+            // validate input(only 0 or 1)
+            if (/^[01]+$/.test(value)) {
+                convert_Value = parseInt(value, 2);  // Convert from binary
+            } else {
+                convert_Value = NaN;  // Invalid input for binary
+            }
+            break;
+        case 'oct':
+            // validate input (0-7)
+            if (/^[0-7]+$/.test(value)) {
+                convert_Value = parseInt(value, 8);  // Convert from octal
+            } else {
+                convert_Value = NaN;  // Invalid input for octal
+            }
+            break;
+        case 'hex':
+            // validate input (0-9, A-F)
+            if (/^[0-9A-Fa-f]+$/.test(value)) {
+                convert_Value = parseInt(value, 16);  // Convert from hexadecimal
+            } else {
+                convert_Value = NaN;  // Invalid input for hexadecimal
+            }
+            break;
+        default:
+            // validate input (digits 0-9)
+            if (/^\d+$/.test(value)) {
+                convert_Value = parseInt(value, 10);  // Convert from decimal
+            } else {
+                convert_Value = NaN;  // Invalid input for decimal
+            }
+        }
+        
+        if (!isNaN(convert_Value)) {
+            // Convert to different bases
+            setConvertedValues({
+            hex: convert_Value.toString(16).toUpperCase(),
+            dec: convert_Value.toString(10),
+            oct: convert_Value.toString(8),
+            bin: convert_Value.toString(2),
+            });
+        } else {
+            // If invalid, reset values
+            setConvertedValues({
+            hex: "Invalid",
+            dec: "Invalid",
+            oct: "Invalid",
+            bin: "Invalid",
+            });
+        }
     };
     
     // --------------------------------------------------------------
 
     const [showResult, setShowResult] = useState(false);
     const [display , setDisplay] = useState("");
+
+    const displayValue = display;
 
     // State for managing the scientific mode and menu visibility
     const [mode, setMode] = useState(Modes.Standard)
@@ -219,7 +245,7 @@ const Calculator = () =>{
             {/* Answer and Calculation section */}
             <div className="overflow-x-auto bg-[#141414] min-h-[100px] flex items-end justify-end flex-col p-4 rounded-[10px]">
                 <div className="text-[25px]">{display}</div>
-                <div className={'${showResult ? resultClass : operationClass} '}>{showResult}</div>
+                <div className={showResult ? resultClass : operationClass} >{showResult}</div>
 
                  {/* Conditionally render converted values in programming mode */}
                 {mode === Modes.Programming && (
