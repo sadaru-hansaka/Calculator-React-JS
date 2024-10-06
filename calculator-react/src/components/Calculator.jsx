@@ -10,6 +10,30 @@ const Modes = {
     Scientefic : "Scientefic",
 }
 
+const programmingCal = (value1 , Op, value2) => {
+    let proResult;
+
+    switch(Op){
+        case "+":
+            proResult = value1 + value2;
+            break;
+        case "-":
+            proResult = value1 - value2;
+            break;
+        case "*":
+            proResult = value1*value2;
+            break;
+        case "/":
+            proResult = value2 !== 0 ? Math.floor(value1/value2) : Nan; //check second hex values is 0 or not
+            break;
+        default:
+            setShowResult("Error");
+            break;
+    }
+    return proResult;
+
+}
+
 const Calculator = () =>{
     const standardkeys = [
         "AC","DEL","%","/",
@@ -60,26 +84,8 @@ const Calculator = () =>{
                             
                             // Check if both conversions were successful
                             if (!isNaN(hex1) && !isNaN(hex2)) {
-                                let hexResult;
-
-                                // check operator
-                                switch(Op){
-                                    case "+":
-                                        hexResult = hex1 + hex2;
-                                        break;
-                                    case "-":
-                                        hexResult = hex1 - hex2;
-                                        break;
-                                    case "*":
-                                        hexResult = hex1*hex2;
-                                        break;
-                                    case "/":
-                                        hexResult = hex2 !== 0 ? Math.floor(hex1/hex2) : Nan; //check second hex values is 0 or not
-                                        break;
-                                    default:
-                                        setShowResult("Error");
-                                        break;
-                                }
+                                
+                                const hexResult = programmingCal(hex1 , Op, hex2)
                                 
                                 setShowResult(hexResult.toString(16).toUpperCase());  // Display the result in hex
                                 updateConvertedValues(hexResult.toString(16).toUpperCase());  // Update converted values
@@ -96,6 +102,13 @@ const Calculator = () =>{
                                 setShowResult("Error");
                             }
                         }
+                    }else if(inputFormat === "oct"){
+
+                    }
+                    else{
+                        const result = evaluate(display);
+                        setShowResult(result);
+                        updateConvertedValues(result);
                     }
                 } else {
                     // Evaluate the expression using math.js 
