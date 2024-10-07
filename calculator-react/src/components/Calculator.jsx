@@ -103,7 +103,66 @@ const Calculator = () =>{
                             }
                         }
                     }else if(inputFormat === "oct"){
+                        const operatorPatterns = /([+\-*/])/;
+                        const operands = display.split(operatorPatterns).map(op => op.trim());
+                        
+                        if (operands.length === 3) {
+                            // Convert each operand from hexadecimal to decimal
+                            const oct1 = parseInt(operands[0], 8);
+                            const Op = operands[1];  //get the operator
+                            const oct2 = parseInt(operands[2], 8);
+                            
+                            // Check if both conversions were successful
+                            if (!isNaN(oct1) && !isNaN(oct2)) {
+                                
+                                const octResult = programmingCal(oct1 , Op, oct2)
+                                
+                                setShowResult(octResult.toString(8).toUpperCase());  // Display the result in hex
+                                updateConvertedValues(octResult.toString(8).toUpperCase());  // Update converted values
+                            } else {
+                                setShowResult("Error");  // invalid input
+                            }
+                        } else {
+                            // If a single value is entered
+                            const octSingle = parseInt(display, 8);
+                            if (!isNaN(octSingle)) {
+                                setShowResult(octSingle);
+                                updateConvertedValues(octSingle.toString(8).toUpperCase());
+                            } else {
+                                setShowResult("Error");
+                            }
+                        }
 
+                    }else if(inputFormat === "bin"){
+                        const operatorPatterns = /([+\-*/])/;
+                        const operands = display.split(operatorPatterns).map(op => op.trim());
+                        
+                        if (operands.length === 3) {
+                            // Convert each operand from hexadecimal to decimal
+                            const bin1 = parseInt(operands[0], 2);
+                            const Op = operands[1];  //get the operator
+                            const bin2 = parseInt(operands[2], 2);
+                            
+                            // Check if both conversions were successful
+                            if (!isNaN(bin1) && !isNaN(bin2)) {
+                                
+                                const binResult = programmingCal(bin1 , Op, bin2)
+                                
+                                setShowResult(binResult.toString(2).toUpperCase());  // Display the result in hex
+                                updateConvertedValues(binResult.toString(2).toUpperCase());  // Update converted values
+                            } else {
+                                setShowResult("Error");  // invalid input
+                            }
+                        } else {
+                            // If a single value is entered
+                            const binSingle = parseInt(display, 2);
+                            if (!isNaN(binSingle)) {
+                                setShowResult(binSingle);
+                                updateConvertedValues(binSingle.toString(2).toUpperCase());
+                            } else {
+                                setShowResult("Error");
+                            }
+                        }
                     }
                     else{
                         const result = evaluate(display);
