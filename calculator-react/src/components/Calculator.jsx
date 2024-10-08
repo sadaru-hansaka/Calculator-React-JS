@@ -4,12 +4,18 @@ import {evaluate} from "mathjs";
 import {FaBars} from "react-icons/fa";  //import menu bar icon
 import { FaExchangeAlt } from "react-icons/fa";
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faClockRotateLeft } from '@fortawesome/free-solid-svg-icons'; // Import from FontAwesome
+
+
+// three modes include inside the calculator
 const Modes = {
     Standard : "Standard",
     Programming : "Programming",
     Scientefic : "Scientefic",
 }
 
+// check the operator(+,-,*,/) and calculate the value
 const programmingCal = (value1 , Op, value2) => {
     let proResult;
 
@@ -30,11 +36,14 @@ const programmingCal = (value1 , Op, value2) => {
             setShowResult("Error");
             break;
     }
+    // return the value
     return proResult;
 
 }
 
 const Calculator = () =>{
+
+    // keys for standard calculator
     const standardkeys = [
         "AC","DEL","%","/",
         "7","8","9","*",
@@ -43,6 +52,7 @@ const Calculator = () =>{
         <FaExchangeAlt/> , "0",".","=",
     ];
 
+    // keys for scientefic calculator
     const datesss = [
         "AC", "DEL", "sin", "cos", "tan", "^", "√", "/",
         "7", "8", "9", "*",
@@ -51,6 +61,7 @@ const Calculator = () =>{
         <FaExchangeAlt/>,".", "0", "=",
     ]
 
+    // keys for programminf cal
     const programmerKeys = [
         "AC", "DEL", "A", "B", 
         "C", "D", "E", "F", 
@@ -61,17 +72,17 @@ const Calculator = () =>{
       ];
 
     const handleClick = (label) =>{
-
+        // when click "AC" key
         if(label === "AC"){
             setDisplay("");   //set display blanck when click AC
             setShowResult("");
             setConvertedValues({ hex: "0", dec: "0", oct: "0", bin: "0" });
-        }else if (label === "DEL"){
+        }else if (label === "DEL"){   //delete key
             setDisplay(display.slice(0, -1));  //delete items one by one from the right side corner when click DEL
         }else if(label === "="){
             // Calculate hex, decimal, octal, binary values
             try {
-                if (mode === Modes.Programming) {
+                if (mode === Modes.Programming) {                   //check the calculator mode
                     if(inputFormat === 'hex'){
                         const operatorPatterns = /([+\-*/])/;
                         const operands = display.split(operatorPatterns).map(op => op.trim());
@@ -85,6 +96,7 @@ const Calculator = () =>{
                             // Check if both conversions were successful
                             if (!isNaN(hex1) && !isNaN(hex2)) {
                                 
+                                // call the function
                                 const hexResult = programmingCal(hex1 , Op, hex2)
                                 
                                 setShowResult(hexResult.toString(16).toUpperCase());  // Display the result in hex
@@ -164,6 +176,7 @@ const Calculator = () =>{
                             }
                         }
                     }
+                    // decimal calculations
                     else{
                         const result = evaluate(display);
                         setShowResult(result);
@@ -324,11 +337,17 @@ const Calculator = () =>{
             {/* menu bar icon */}
             <FaBars onClick={toggleMenu} className="mr-5 mt-1 cursor-pointer"/> 
             <p className="m-0 text-[20px]">{mode}</p> {/* Display the current mode */}
-        </div>
 
+            {/* history icon */}
+            <div className="ml-auto flex items-end text-[20px] mr-2 cursor-pointer">
+                <FontAwesomeIcon icon={faClockRotateLeft} style={{color: "#ffff"}} />
+            </div>
+        </div>
+        
             
             {menuOpen && (
                 <div className="absolute items-start bg-[#222] p-6 w-[316px] rounded-2xl m-0">
+                {/* display all the modes as a list */}
                 <ul className="flex flex-col gap-2">
                  <li onClick={toggleMenu} className="text-red-600 cursor-pointer flex justify-end p-0 m-0">x</li>
                   <li className="cursor-pointer hover:text-blue-400" onClick={() => changeMode(Modes.Standard)}>Standard</li>
@@ -340,6 +359,7 @@ const Calculator = () =>{
 
             {/* Answer and Calculation section */}
             <div className="overflow-x-auto bg-[#141414] min-h-[100px] flex items-end justify-end flex-col p-4 rounded-[10px]">
+                {/* display typing values */}
                 <div className="text-[25px]">{display}</div>
                 <div className={showResult ? resultClass : operationClass} >{showResult}</div>
 
