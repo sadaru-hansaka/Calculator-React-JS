@@ -77,6 +77,7 @@ const Calculator = () =>{
             setDisplay("");   //set display blanck when click AC
             setShowResult("");
             setConvertedValues({ hex: "0", dec: "0", oct: "0", bin: "0" });
+            sethistoryDisplay("")
         }else if (label === "DEL"){   //delete key
             setDisplay(display.slice(0, -1));  //delete items one by one from the right side corner when click DEL
         }else if(label === "="){
@@ -181,12 +182,18 @@ const Calculator = () =>{
                         const result = evaluate(display);
                         setShowResult(result);
                         updateConvertedValues(result);
+
                     }
                 } else {
                     // Evaluate the expression using math.js 
                     const result = evaluate(display);
                     setShowResult(result);
                     updateConvertedValues(result);
+
+                    // set history
+                    const updatedHistory = [...history, `${display} = ${result}`];
+                    setHistory(updatedHistory);
+
                 }
             } catch (error) {
                 console.error(error);  // Log the error for debugging
@@ -209,16 +216,19 @@ const Calculator = () =>{
                 setMode(Modes.Scientefic);
                 setDisplay("");
                 setShowResult("");
+                sethistoryDisplay("");
             }else if (mode === Modes.Scientefic){
                 setMode(Modes.Standard);
                 setDisplay("");
                 setShowResult("");
+                sethistoryDisplay("");
             }
             // --------------------------
         }else{
             // display clicked numbers and operators
             setDisplay(display + label);
             setShowResult(false);
+            sethistoryDisplay("");
 
             if (mode === Modes.Programming){
               updateConvertedValues(display+label);
@@ -295,6 +305,24 @@ const Calculator = () =>{
     const [mode, setMode] = useState(Modes.Standard)
     const [menuOpen, setMenuOpen] = useState(false); 
 
+    // history state
+    const [history, setHistory] = useState([]);
+ 
+
+    const [histortDisplay, sethistoryDisplay] = useState("");
+
+    const displayHistory = () => {
+        // last three items from the history array
+        const lastThreeHistory = history.slice(-3);
+        // display on three lines
+        const historyString = lastThreeHistory.join("\n");
+        sethistoryDisplay(historyString);
+        setDisplay("History"); 
+        setShowResult("");
+    };
+    
+    
+
       // Programming calculator data converters
     const [convertedValues, setConvertedValues] = useState({
       hex: "0",
@@ -315,6 +343,7 @@ const Calculator = () =>{
     const changeMode = (newMode) => {
         setShowResult("");
         setDisplay("");
+        sethistoryDisplay("");
         setMode(newMode);
         setMenuOpen(false); // Close the menu after selecting a mode
       };
@@ -338,29 +367,34 @@ const Calculator = () =>{
             <FaBars onClick={toggleMenu} className="mr-5 mt-1 cursor-pointer"/> 
             <p className="m-0 text-[20px]">{mode}</p> {/* Display the current mode */}
 
-            {/* history icon */}
-            <div className="ml-auto flex items-end text-[20px] mr-2 cursor-pointer">
-                <FontAwesomeIcon icon={faClockRotateLeft} style={{color: "#ffff"}} />
-            </div>
+            {/* history icon displays only for standard and scientefic calculators only*/}
+            {(mode === Modes.Standard || mode === Modes.Scientefic) && (
+                <div onClick={displayHistory} className="ml-auto flex items-end text-[20px] mr-2 cursor-pointer">
+                    <FontAwesomeIcon icon={faClockRotateLeft} style={{color: "#ffff"}} />
+                </div>
+            )}
         </div>
         
             
             {menuOpen && (
+                
                 <div className="absolute items-start bg-[#222] p-6 w-[316px] rounded-2xl m-0">
-                {/* display all the modes as a list */}
-                <ul className="flex flex-col gap-2">
-                 <li onClick={toggleMenu} className="text-red-600 cursor-pointer flex justify-end p-0 m-0">x</li>
-                  <li className="cursor-pointer hover:text-blue-400" onClick={() => changeMode(Modes.Standard)}>Standard</li>
-                  <li className="cursor-pointer hover:text-blue-400" onClick={() => changeMode(Modes.Scientefic)}>Scientific</li>
-                  <li className="cursor-pointer hover:text-blue-400" onClick={() => changeMode(Modes.Programming)}>Programming</li>
-                </ul>
-              </div>
+                    {/* display all the modes as a list */}
+                    <ul className="flex flex-col gap-2">
+                    <li onClick={toggleMenu} className="text-red-600 cursor-pointer flex justify-end p-0 m-0">x</li>
+                    <li className="cursor-pointer hover:text-blue-400" onClick={() => changeMode(Modes.Standard)}>Standard</li>
+                    <li className="cursor-pointer hover:text-blue-400" onClick={() => changeMode(Modes.Scientefic)}>Scientific</li>
+                    <li className="cursor-pointer hover:text-blue-400" onClick={() => changeMode(Modes.Programming)}>Programming</li>
+                    </ul>
+                </div>
             )}
 
             {/* Answer and Calculation section */}
             <div className="overflow-x-auto bg-[#141414] min-h-[100px] flex items-end justify-end flex-col p-4 rounded-[10px]">
-                {/* display typing values */}
-                <div className="text-[25px]">{display}</div>
+                {/* display typing values | use <pre> to preserve formattings */}
+                <div className="text-[25px]">{display}</div> 
+
+                <pre className="text-[20px] text-slate-400">{histortDisplay}</pre> 
                 <div className={showResult ? resultClass : operationClass} >{showResult}</div>
 
                  {/* Conditionally render converted values in programming mode */}
