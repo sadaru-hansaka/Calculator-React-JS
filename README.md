@@ -23,4 +23,7 @@ Number System Conversion: Convert numbers between Hex, Decimal, Octal, and Binar
 
 1. Clone the repositary
 2. Install dependencies [npm install]
-3. Start the development server [npm run dev]
+3. Install react-icons [npm install react-icons]
+4. Install mathjs [npm install mathjs]
+5. Install fontawesome [npm install @fortawesome/react-fontawesome]
+6. Start the development server [npm run dev]
